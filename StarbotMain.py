@@ -19,8 +19,8 @@ if environment == "production":
 
 bot = commands.Bot(command_prefix='!')              
 
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "excluded from source control")   #excluded from source control
-FAQFILE_PATH = os.getenv("FAQFILE_PATH", os.path.join("data", "faqfile.json"))
+DISCORD_TOKEN = os.getenv("STARBOT_DISCORD_TOKEN", "excluded from source control")   #excluded from source control
+FAQFILE_PATH = os.getenv("STARBOT_FAQFILE_PATH", os.path.join("data", "faqfile.json"))
 
 client = discord.Client()
 
