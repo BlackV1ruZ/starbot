@@ -4,19 +4,23 @@ from discord.utils import get
 import requests
 import json
 import smtplib, ssl
+import os
 from datetime import datetime 
 
 
-port = 465                                          
+port = int(os.getenv("STARBOT_PORT",465))
 context = ssl.create_default_context()              
-sender_email = "starbort.quanteedev@gmail.com"      
-receiver_email1 = "balinticha3@gmail.com"           
+sender_email = os.getenv("STARBOT_SENDER_EMAIL", "starbort.quanteedev@gmail.com")
+receiver_email1 = os.getenv("STARBOT_RECEIVER_EMAIL", "balinticha3@gmail.com")
+environment = os.getenv("STARBOT_ENVIRONMENT", "production")
 
-password = input("Gmail autenthication requied: ")  #Comment out this part for testing
+if environment == "production":
+  password = input("Gmail autenthication requied: ") # Comment this out or set the environment variable STARBOT_ENVIRONMENT to development while testing
 
 bot = commands.Bot(command_prefix='!')              
 
-DISCORD_TOKEN = ''   #excluded from source control                   
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN", "excluded from source control")   #excluded from source control
+FAQFILE_PATH = os.getenv("FAQFILE_PATH", os.path.join("data", "faqfile.json"))
 
 client = discord.Client()
 
