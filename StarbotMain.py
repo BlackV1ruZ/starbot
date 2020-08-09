@@ -5,6 +5,8 @@ import requests
 import json
 import smtplib, ssl
 import os
+import io
+import aiohttp
 from datetime import datetime 
 
 
@@ -26,8 +28,7 @@ client = discord.Client()
 
 
 @bot.event
-async def on_ready():                                               
-    print(f'{bot.user.name} has connected to Discord!')          
+async def on_ready():                                                   print(f'{bot.user.name} has connected to Discord!')          
 
 @bot.command(name="bot.test", help="Bot test command. todo remove this from full release")  
 async def bot_test_response(ctx):                           
@@ -79,14 +80,25 @@ async def say_message(ctx, channelId, *, message):
     await targetChannel.send(message)
     await ctx.send("Message successfully sent")
 
-@bot.command(name="cat", help="Sends an adorable cute cat image. Don't spam this please.")
-async def show_cat(ctx):
-    try:
-        response = requests.get('https://aws.random.cat/meow')      
-        data = response.json()                                     
-        await ctx.send(data['file'])                              
-    except:                                                                         #todo Too broad cause, fix this
-        await ctx.send("Random.cat API unreachable. try again later")  
+@bot.command(name="cat", help="Sends an adorable cute cat image. Don't spam this please.",)
+async def show_cat(ctx, tag: str=""):
+    cat_url="https://cataas.com/cat"
+    if len(tag)>0:
+        if tag == "says":
+            return await ctx.send("Cats cant talk, silly! (Soon...)")
+        else:
+            cat_url+="/"+tag
+    async with aiohttp.ClientSession() as session:
+        async with session.get(cat_url) as resp:
+            if resp.status != 200:
+                return await ctx.send("The cats are all asleep. sshhhh")
+            data = io.BytesIO(await resp.read())
+            contenttype=resp.content_type.split("/")
+            if contenttype[0] != "image":
+                return await ctx.send("unkown content-type: " + resp.content_type)
+            else: 
+                filename="cat?." + contenttype[1]
+                return await ctx.send(file=discord.File(data, filename))
 
 @bot.command(name="remind.record", help="Record a reminder")
 @commands.has_role("Director")                                   
